@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CSM.Bataan.Web.Infrastructure.Data.Helpers;
+using CSM.Bataan.Web.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CSM.Bataan.Web.Controllers
@@ -19,9 +20,10 @@ namespace CSM.Bataan.Web.Controllers
 
         public IActionResult Index()
         {
-            var posts = this._context.Posts.ToList();
-
-            return View();
+            return View(new IndexViewModel()
+            {
+                Posts = this._context.Posts.ToList()
+            });
         }
 
         public IActionResult Post(Guid? postId)

@@ -1,0 +1,16 @@
+﻿@model CSM.Bataan.Web.ViewModels.IndexViewModel
+@using CSM.Bataan.Web.Infrastructure.Data.Models
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h2>Posts</h2>
+
+@{ 
+    foreach(Post post in Model.Posts)
+    {
+        <h1>@post.Title</h1>
+        <div>@post.Timestamp.ToString("dddd, dd MMMM yyyy hh:mm tt")</div>
+    }
+}
+
