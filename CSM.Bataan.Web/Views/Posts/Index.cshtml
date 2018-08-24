@@ -1,16 +1,37 @@
 ﻿@model CSM.Bataan.Web.ViewModels.IndexViewModel
 @using CSM.Bataan.Web.Infrastructure.Data.Models
 @{
-    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_BlogWithWidgets.cshtml";
 }
 
-<h2>Posts</h2>
-
-@{ 
-    foreach(Post post in Model.Posts)
+<h1 class="my-4">
+    Posts
+    <small>Wall view</small>
+</h1>
+@{
+    foreach (Post post in Model.Posts)
     {
-        <h1>@post.Title</h1>
-        <div>@post.Timestamp.ToString("dddd, dd MMMM yyyy hh:mm tt")</div>
+        <!-- Blog Post -->
+        <div class="card mb-4">
+            <img class="card-img-top" src="http://placehold.it/750x300" alt="Card image cap">
+            <div class="card-body">
+                <h2 class="card-title">@post.Title</h2>
+                <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Reiciendis aliquid atque, nulla? Quos cum ex quis soluta, a laboriosam. Dicta expedita corporis animi vero voluptate voluptatibus possimus, veniam magni quis!</p>
+                <a href="#" class="btn btn-primary">Read More &rarr;</a>
+            </div>
+            <div class="card-footer text-muted">
+                Posted on @post.Timestamp.ToString("dddd, dd MMMM yyyy hh:mm tt")
+            </div>
+        </div>
     }
 }
 
+<!-- Pagination -->
+<ul class="pagination justify-content-center mb-4">
+    <li class="page-item">
+        <a class="page-link" href="#">&larr; Older</a>
+    </li>
+    <li class="page-item disabled">
+        <a class="page-link" href="#">Newer &rarr;</a>
+    </li>
+</ul>
