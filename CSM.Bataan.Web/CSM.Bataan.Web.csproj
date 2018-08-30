@@ -14,6 +14,7 @@
 
   <ItemGroup>
     <Folder Include="Infrastructure\Data\Enums\" />
+    <Folder Include="wwwroot\posts\3a88bea9-8a65-4c23-941a-972a6195b940\" />
   </ItemGroup>
 
 </Project>
