@@ -15,7 +15,7 @@ namespace CSM.Bataan.Web.Migrations
                     Timestamp = table.Column<DateTime>(nullable: false),
                     Title = table.Column<string>(nullable: true),
                     Content = table.Column<string>(nullable: true),
-                    Thumbnail = table.Column<string>(nullable: true),
+                    Description = table.Column<string>(nullable: true),
                     TemplateName = table.Column<string>(nullable: true),
                     IsPublished = table.Column<bool>(nullable: false),
                     PostExpiry = table.Column<DateTime>(nullable: false)

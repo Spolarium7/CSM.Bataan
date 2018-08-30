@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CSM.Bataan.Web.Migrations
 {
     [DbContext(typeof(DefaultDbContext))]
-    [Migration("20180824102824_init")]
+    [Migration("20180830102832_init")]
     partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -26,13 +26,13 @@ namespace CSM.Bataan.Web.Migrations
 
                     b.Property<string>("Content");
 
+                    b.Property<string>("Description");
+
                     b.Property<bool>("IsPublished");
 
                     b.Property<DateTime>("PostExpiry");
 
                     b.Property<string>("TemplateName");
-
-                    b.Property<string>("Thumbnail");
 
                     b.Property<DateTime>("Timestamp");
 

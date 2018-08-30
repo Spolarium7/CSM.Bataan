@@ -24,13 +24,13 @@ namespace CSM.Bataan.Web.Migrations
 
                     b.Property<string>("Content");
 
+                    b.Property<string>("Description");
+
                     b.Property<bool>("IsPublished");
 
                     b.Property<DateTime>("PostExpiry");
 
                     b.Property<string>("TemplateName");
-
-                    b.Property<string>("Thumbnail");
 
                     b.Property<DateTime>("Timestamp");
 
