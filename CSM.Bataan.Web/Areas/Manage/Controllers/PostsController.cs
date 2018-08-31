@@ -106,5 +106,21 @@ namespace CSM.Bataan.Web.Areas.Manage.Controllers
 
             return null;
         }
+
+        [HttpPost, Route("manage/posts/publish")]
+        public IActionResult Publish(PostIdViewModel model)
+        {
+            var post = this._context.Posts.FirstOrDefault(p => p.Id == model.Id);
+
+            if (post != null)
+            {
+                post.IsPublished = true;
+                this._context.Posts.Update(post);
+                this._context.SaveChanges();
+                return Ok();
+            }
+
+            return null;
+        }
     }
 }
