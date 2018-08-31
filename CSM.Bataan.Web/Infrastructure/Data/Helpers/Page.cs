@@ -16,5 +16,7 @@ namespace CSM.Bataan.Web.Infrastructure.Data.Helpers
         public long PageSize { get; set; }
 
         public long PageIndex { get; set; }
+
+        public string Keyword { get; set; }
     }
 }

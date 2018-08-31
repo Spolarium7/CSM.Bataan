@@ -55,6 +55,7 @@ namespace CSM.Bataan.Web.Areas.Manage.Controllers
             result.PageSize = pageSize;
             result.QueryCount = queryCount;
             result.PageIndex = pageIndex;
+            result.Keyword = keyword;
 
             return View(new IndexViewModel() {
                 Posts = result

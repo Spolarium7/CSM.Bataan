@@ -9,44 +9,54 @@
 <h2>Index</h2>
 
 <div class="card-container col-md-8">
+    <div class="card">
+        <div class="card-body">
+            <div class="input-group mb-3">
+                <input id="searchKeyword" type="text" class="form-control" value="@Model.Posts.Keyword" placeholder="Search by title" aria-label="Search title" aria-describedby="basic-addon2">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" type="button" onclick="searchTrigger()">Search</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-@{
-    if (Model.Posts != null)
-    {
-        if (Model.Posts.Items.Count > 0)
+    @{
+        if (Model.Posts != null)
         {
-            foreach (Post post in Model.Posts.Items)
+            if (Model.Posts.Items.Count > 0)
             {
-                <div class="card">
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-sm-3">
-                                <img src="~/posts/@post.Id/thumbnail.png" style="width:150px;height:150px;"/>
-                            </div>
-                            <div class="col-sm-9">
-                                <h4>@post.Title</h4>
-                                <p>@post.Description</p>
-                                <ul class="list-inline">
-                                    <li class="list-inline-item"><a href="#" title="Upload Banner"><button class="btn-success"><i class="fas fa-image"></i></button></a></li>
-                                    <li class="list-inline-item"><a href="#" title="Upload Thumbnail"><button class="btn-success"><i class="fas fa-file-image"></i></button></a></li>
-                                    <li class="list-inline-item"><a href="#" title="Update Content"><button class="btn-success"><i class="fas fa-file-alt"></i></button></a></li>
-                                    <li class="list-inline-item"><a href="#" title="Update Title"><button class="btn-success"><i class="fas fa-pen-alt"></i></button></a></li>
-                                    @{
-                                        if (post.IsPublished)
-                                        {
-                                            <li class="list-inline-item"><a href="#" title="Unpublish"><button class="btn-danger"><i class="fas fa-window-close"></i></button></a></li>
+                foreach (Post post in Model.Posts.Items)
+                {
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <img src="~/posts/@post.Id/thumbnail.png" style="width:150px;height:150px;" />
+                                </div>
+                                <div class="col-sm-9">
+                                    <h4>@post.Title</h4>
+                                    <p>@post.Description</p>
+                                    <ul class="list-inline">
+                                        <li class="list-inline-item"><a href="#" title="Upload Banner"><button class="btn-success"><i class="fas fa-image"></i></button></a></li>
+                                        <li class="list-inline-item"><a href="#" title="Upload Thumbnail"><button class="btn-success"><i class="fas fa-file-image"></i></button></a></li>
+                                        <li class="list-inline-item"><a href="#" title="Update Content"><button class="btn-success"><i class="fas fa-file-alt"></i></button></a></li>
+                                        <li class="list-inline-item"><a href="#" title="Update Title"><button class="btn-success"><i class="fas fa-pen-alt"></i></button></a></li>
+                                        @{
+                                            if (post.IsPublished)
+                                            {
+                                                <li class="list-inline-item"><a href="#" title="Unpublish"><button class="btn-danger"><i class="fas fa-window-close"></i></button></a></li>
+                                            }
+                                            else
+                                            {
+                                                <li class="list-inline-item"><a href="#" title="Publish"><button class="btn-success"><i class="fas fa-check-square"></i></button></a></li>
+                                            }
                                         }
-                                        else
-                                        {
-                                            <li class="list-inline-item"><a href="#" title="Publish"><button class="btn-success"><i class="fas fa-check-square"></i></button></a></li>
-                                        }
-                                    }
-                                </ul>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>          
-                                        }
+                }
 
 
 
@@ -65,27 +75,36 @@
                     }
                     <li class="page-item"><a class="page-link" href="~/manage/posts?pageIndex=@Model.Posts.PageCount">Last</a></li>
                 </ul>
+            }
         }
     }
-}
 
 </div>
 
 
 
-@section pageStyles{ 
-    <style>
-        h2{
-            margin-top: 30px;
-        }
-        .card-container{
-            margin-bottom: 30px;
-        }
-        .card {
-            margin-top: 15px;
-            margin-bottom: 15px;
-        }
-    </style>
+@section pageStyles{
+<style>
+    h2 {
+        margin-top: 30px;
+    }
+
+    .card-container {
+        margin-bottom: 30px;
+    }
+
+    .card {
+        margin-top: 15px;
+        margin-bottom: 15px;
+    }
+</style>
 }
 
 
+@section pageScripts{
+<script>
+    function searchTrigger() {
+        window.location = "/manage/posts?pageIndex=1&keyword=" + $("#searchKeyword").val(); 
+    }
+</script>
+}
