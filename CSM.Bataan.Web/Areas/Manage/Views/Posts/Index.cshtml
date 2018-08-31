@@ -13,7 +13,8 @@
 @{
     if (Model.Posts != null)
     {
-        if(Model.Posts.Items.Count > 0) {
+        if (Model.Posts.Items.Count > 0)
+        {
             foreach (Post post in Model.Posts.Items)
             {
                 <div class="card">
@@ -45,7 +46,25 @@
                         </div>
                     </div>
                 </div>          
-            }
+                                        }
+
+
+
+                <ul class="pagination">
+                    <li class="page-item"><a class="page-link" href="~/manage/posts?pageIndex=1">First</a></li>
+                    @{ if (Model.Posts.PageIndex > 1)
+                        {
+                            <li class="page-item"><a class="page-link" href="~/manage/posts?pageIndex=@(Model.Posts.PageIndex - 1)">@(Model.Posts.PageIndex - 1)</a></li>
+                        }
+                    }
+                    <li class="page-item"><a class="page-link active href="#">@(Model.Posts.PageIndex)</a></li>
+                    @{ if ((Model.Posts.PageIndex + 1) <= Model.Posts.PageCount)
+                        {
+                            <li class="page-item"><a class="page-link" href="~/manage/posts?pageIndex=@(Model.Posts.PageIndex + 1)">@(Model.Posts.PageIndex + 1)</a></li>
+                        }
+                    }
+                    <li class="page-item"><a class="page-link" href="~/manage/posts?pageIndex=@Model.Posts.PageCount">Last</a></li>
+                </ul>
         }
     }
 }
