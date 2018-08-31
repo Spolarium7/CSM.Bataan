@@ -19,6 +19,47 @@ namespace CSM.Bataan.Web.Areas.Manage.Controllers
             _context = context;
         }
 
+        [HttpGet, Route("manage/posts/index")]
+        [HttpGet, Route("manage/posts")]
+        public IActionResult Index(int pageIndex = 1, int pageSize = 2, string keyword = "")
+        {
+            Page<Post> result = new Page<Post>();
+
+            if (pageSize < 1)
+            {
+                pageSize = 1;
+            }
+
+            IQueryable<Post> postQuery = (IQueryable<Post>)this._context.Posts;
+
+            if (string.IsNullOrEmpty(keyword) == false)
+            {
+                postQuery = postQuery.Where(u => u.Title.ToLower().Contains(keyword.ToLower()));
+            }
+
+            long queryCount = postQuery.Count();
+
+            int pageCount = (int)Math.Ceiling((decimal)(queryCount / pageSize));
+            long mod = (queryCount % pageSize);
+
+            if (mod > 0)
+            {
+                pageCount = pageCount + 1;
+            }
+
+            int skip = (int)(pageSize * (pageIndex - 1));
+            List<Post> users = postQuery.ToList();
+
+            result.Items = users.Skip(skip).Take((int)pageSize).ToList();
+            result.PageCount = pageCount;
+            result.PageSize = pageSize;
+            result.QueryCount = queryCount;
+            result.CurrentPage = pageIndex;
+
+            return View(new IndexViewModel() {
+                Posts = result
+            });
+        }
 
         [HttpGet, Route("manage/posts/create")]
         public IActionResult Create()
@@ -48,5 +89,7 @@ namespace CSM.Bataan.Web.Areas.Manage.Controllers
 
             return View();
         }
+
+
     }
 }
