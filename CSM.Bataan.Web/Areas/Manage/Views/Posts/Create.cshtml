@@ -1,0 +1,42 @@
+﻿@model CSM.Bataan.Web.Areas.Manage.ViewModels.Posts.CreateViewModel
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_PublicLayout.cshtml";
+}
+
+<h2>Create</h2>
+
+<div class="row">
+    <div class="col-md-6">
+        <form action="~/manage/posts/create" method="post">
+            @Html.ValidationSummary()
+            <div class="form-group">
+                <label for="Title">Title:</label>
+                <input type="text" class="form-control" name="Title" />
+            </div>
+            <div class="form-group">
+                <label for="Description">Description</label>
+                <textarea class="form-control" rows="4" name="Description">
+                </textarea>
+            </div>
+            <div class="form-group">
+                <label for="Content">Content</label>
+                <textarea class="form-control" rows="8" name="Content">
+                </textarea>
+            </div>
+            <div class="form-group">
+                <label for="Post Expiry">Post Expiry:</label>
+                <input type="text" class="form-control" name="PostExpiry" id="postExpiry" />
+            </div>
+            <button type="submit" class="btn btn-default">Submit</button>
+        </form>
+    </div>
+</div>
+
+@section pageScripts{ 
+<script>
+    $(function () {
+        $("#postExpiry").datepicker({ dateFormat: 'dd/mm/yy' });
+    });
+</script>
+}
