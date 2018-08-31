@@ -44,11 +44,11 @@
                                         @{
                                             if (post.IsPublished)
                                             {
-                                                <li class="list-inline-item"><a href="#" title="Unpublish"><button class="btn-danger"><i class="fas fa-window-close"></i></button></a></li>
+                                                <li class="list-inline-item"><a href="#" title="Unpublish" onclick="confirmUnpublish('@post.Id','@post.Title')"><button class="btn-danger"><i class="fas fa-window-close"></i></button></a></li>
                                             }
                                             else
                                             {
-                                                <li class="list-inline-item"><a href="#" title="Publish"><button class="btn-success"><i class="fas fa-check-square"></i></button></a></li>
+                                                <li class="list-inline-item"><a href="#" title="Publish" ><button class="btn-success"><i class="fas fa-check-square"></i></button></a></li>
                                             }
                                         }
                                     </ul>
@@ -81,36 +81,84 @@
 
 </div>
 
+<!--MODAL-->
+<div class="modal" tabindex="-1" role="dialog" id="modal-unpublish">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Unpublish Post</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to unpublish <span id="modal-unpublish-title"></span>?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" id="modal-unpublish-button">Yes</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 
 @section pageStyles{
-<style>
-    h2 {
-        margin-top: 30px;
-    }
+    <style>
+        h2 {
+            margin-top: 30px;
+        }
 
-    .card-container {
-        margin-bottom: 30px;
-    }
+        .card-container {
+            margin-bottom: 30px;
+        }
 
-    .card {
-        margin-top: 15px;
-        margin-bottom: 15px;
-    }
-</style>
+        .card {
+            margin-top: 15px;
+            margin-bottom: 15px;
+        }
+    </style>
 }
 
 
 @section pageScripts{
-<script>
-    function searchTrigger() {
-        window.location = "/manage/posts?pageIndex=1&keyword=" + $("#searchKeyword").val(); 
-    }
+    <script>
 
-    $("#searchKeyword").keyup(function (event) {
-        if (event.keyCode === 13) {
-            searchTrigger();
+        //////////////////////SEARCH/////////////////////////////////////////////////////////////////
+        function searchTrigger() {
+            window.location = "/manage/posts?pageIndex=1&keyword=" + $("#searchKeyword").val();
         }
-    });
-</script>
+
+        $("#searchKeyword").keyup(function (event) {
+            if (event.keyCode === 13) {
+                searchTrigger();
+            }
+        });
+
+
+        ////////////////////UNPUBLISH/////////////////////////////////////////////////////////////////
+        function confirmUnpublish(id, title) {
+            $("#modal-unpublish-title").html(title);
+            $("#modal-unpublish-button").attr("onclick", "unPublishPost('" + id + "')");
+            $("#modal-unpublish").modal("show");
+        }
+
+        function unPublishPost(id) {
+            $.ajax({
+                type: "POST",
+                url: "/manage/posts/unpublish",
+                data: { id: id },
+                success: function (data) {
+                    location.reload();
+                },
+                error: function (xhr) {
+                    var response = JSON.parse(xhr.responseText);
+                    alert("Error Occured : " + response.errors[0]);
+                    location.reload();
+                }
+            });
+        }
+
+    </script>
 }

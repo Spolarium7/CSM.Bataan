@@ -91,6 +91,20 @@ namespace CSM.Bataan.Web.Areas.Manage.Controllers
             return View();
         }
 
+        [HttpPost, Route("manage/posts/unpublish")]
+        public IActionResult Unpublish(PostIdViewModel model)
+        {
+            var post = this._context.Posts.FirstOrDefault(p => p.Id == model.Id);
 
+            if (post != null)
+            {
+                post.IsPublished = false;
+                this._context.Posts.Update(post);
+                this._context.SaveChanges();
+                return Ok();
+            }
+
+            return null;
+        }
     }
 }
