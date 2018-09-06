@@ -122,5 +122,49 @@ namespace CSM.Bataan.Web.Areas.Manage.Controllers
 
             return null;
         }
+
+        [HttpGet, Route("/manage/posts/update-title/{postId}")]
+        public IActionResult UpdateTitle(Guid? postId)
+        {
+            var post = this._context.Posts.FirstOrDefault(p => p.Id == postId);
+
+            if(post != null)
+            {
+                var model = new UpdateTitleViewModel()
+                {
+                    Id = post.Id,
+                    Description = post.Description,
+                    Title = post.Title,
+                    PostExpiry = post.PostExpiry,
+                    TemplateName = post.TemplateName
+                };
+
+                return View(model);
+            }
+
+            return RedirectToAction("Create");
+        }
+
+        [HttpPost, Route("/manage/posts/update-title")]
+        public IActionResult UpdateTitle(UpdateTitleViewModel model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+
+            var post = this._context.Posts.FirstOrDefault(p => p.Id == model.Id);
+
+            if(post != null)
+            {
+                post.Title = model.Title;
+                post.Description = model.Description;
+                post.PostExpiry = model.PostExpiry;
+                post.TemplateName = model.TemplateName;
+
+                this._context.Posts.Update(post);
+                this._context.SaveChanges();
+            }
+
+            return RedirectToAction("Index");
+        }
     }
 }
