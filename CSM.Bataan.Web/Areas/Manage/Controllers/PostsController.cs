@@ -6,6 +6,11 @@ using CSM.Bataan.Web.Areas.Manage.ViewModels.Posts;
 using CSM.Bataan.Web.Infrastructure.Data.Helpers;
 using CSM.Bataan.Web.Infrastructure.Data.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.IO;
+using Microsoft.AspNetCore.Hosting;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
 
 namespace CSM.Bataan.Web.Areas.Manage.Controllers
 {
@@ -13,10 +18,12 @@ namespace CSM.Bataan.Web.Areas.Manage.Controllers
     public class PostsController : Controller
     {
         private readonly DefaultDbContext _context;
+        private IHostingEnvironment _env;
 
-        public PostsController(DefaultDbContext context)
+        public PostsController(DefaultDbContext context, IHostingEnvironment env)
         {
             _context = context;
+            _env = env;
         }
 
         [HttpGet, Route("manage/posts/index")]
@@ -165,6 +172,80 @@ namespace CSM.Bataan.Web.Areas.Manage.Controllers
             }
 
             return RedirectToAction("Index");
+        }
+
+        [HttpGet, Route("/manage/posts/update-thumbnail/{postId}")]
+        public IActionResult Thumbnail(Guid? postId)
+        {
+            return View(new ThumbnailViewModel() { PostId = postId });
+        }
+
+        [HttpPost, Route("/manage/posts/update-thumbnail")]
+        public async Task<IActionResult> Thumbnail(ThumbnailViewModel model)
+        {
+            //Check file size of the uploaded thumbnail
+            //reject if the file is greater than 2mb
+            var fileSize = model.Thumbnail.Length;
+            if ((fileSize / 1048576.0) > 2)
+            {
+                ModelState.AddModelError("", "The file you uploaded is too large. Filesize limit is 2mb.");
+                return View(model);
+            }
+
+            //Check file type of the uploaded thumbnail
+            //reject if the file is not a jpeg or png
+            if (model.Thumbnail.ContentType != "image/jpeg" && model.Thumbnail.ContentType != "image/png")
+            {
+                ModelState.AddModelError("", "Please upload a jpeg or png file for the thumbnail.");
+                return View(model);
+            }
+
+            //Formulate the directory where the file will be saved
+            //create the directory if it does not exist
+            var dirPath = _env.WebRootPath + "/posts/" + model.PostId.ToString();
+            if (!Directory.Exists(dirPath))
+            {
+                Directory.CreateDirectory(dirPath);
+            }
+
+            //always name the file thumbnail.png
+            var filePath = dirPath + "/thumbnail.png";
+
+            if (model.Thumbnail.Length > 0)
+            {
+
+                //Open a file stream to read all the file data into a byte array
+                byte[] bytes = await FileBytes(model.Thumbnail.OpenReadStream());
+
+                //load the file into the third party (ImageSharp) Nuget Plugin                
+                using (Image<Rgba32> image = Image.Load(bytes))
+                {
+                    //use the Mutate method to resize the image 150px wide by 150px long
+                    image.Mutate(x => x.Resize(150, 150));
+
+                    //save the image into the path formulated earlier
+                    image.Save(filePath);
+                }      
+            }
+
+            return RedirectToAction("Thumbnail", new { PostId = model.PostId });
+        }
+
+
+        //this method is used to load the file stream into 
+        //a byte array
+        public async Task<byte[]> FileBytes(Stream input)
+        {
+            byte[] buffer = new byte[16 * 1024];
+            using (MemoryStream ms = new MemoryStream())
+            {
+                int read;
+                while ((read = input.Read(buffer, 0, buffer.Length)) > 0)
+                {
+                    ms.Write(buffer, 0, read);
+                }
+                return ms.ToArray();
+            }
         }
     }
 }

@@ -1,0 +1,26 @@
+﻿@model CSM.Bataan.Web.Areas.Manage.ViewModels.Posts.ThumbnailViewModel
+@{
+    ViewData["Title"] = "Thumbnail";
+    Layout = "~/Views/Shared/_PublicLayout.cshtml";
+}
+
+<h2>Post Thumbnail</h2>
+
+<div class="row">
+    <div class="col-md-6">
+        <form action="~/manage/posts/update-thumbnail" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <input type="hidden" name="PostId" value="@Model.PostId" />
+                <label for="Thumbnail">Thumbnail:</label><br />
+                <img src="~/posts/@Model.PostId/thumbnail.png" style="width:150px;height:150px;" /></br></br>
+                <input type="file" class="form-control" name="Thumbnail" />
+                @Html.ValidationSummary()
+            </div>
+            <div class="form-group">
+                <div class="col-md-10">
+                    <input type="submit" value="Upload" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

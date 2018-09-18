@@ -10,12 +10,13 @@
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.1" />
     <PackageReference Include="Pomelo.Data.MySql.Unofficial" Version="1.0.1" />
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="2.1.1" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="1.0.0-beta0005" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Areas\Manage\Data\" />
     <Folder Include="Infrastructure\Data\Enums\" />
-    <Folder Include="wwwroot\posts\3a88bea9-8a65-4c23-941a-972a6195b940\" />
+    <Folder Include="wwwroot\posts\3a88bea9-8a65-4c23-941a-972a6195b9401\" />
   </ItemGroup>
 
 </Project>
