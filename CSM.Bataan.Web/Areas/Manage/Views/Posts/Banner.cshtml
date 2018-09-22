@@ -1,0 +1,26 @@
+﻿@model CSM.Bataan.Web.Areas.Manage.ViewModels.Posts.BannerViewModel
+@{
+    ViewData["Title"] = "Banner";
+    Layout = "~/Views/Shared/_PublicLayout.cshtml";
+}
+
+<h2>Post Banner</h2>
+
+<div class="row">
+    <div class="col-md-6">
+        <form action="~/manage/posts/update-banner" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <input type="hidden" name="PostId" value="@Model.PostId" />
+                <label for="Banner">Banner:</label><br />
+                <img src="~/posts/@Model.PostId/banner.png" style="max-width:750px;max-height:300px;" /></br></br>
+                <input type="file" class="form-control" name="banner" />
+                @Html.ValidationSummary()
+            </div>
+            <div class="form-group">
+                <div class="col-md-10">
+                    <input type="submit" value="Upload" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

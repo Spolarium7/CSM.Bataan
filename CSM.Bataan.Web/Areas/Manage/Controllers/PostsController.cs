@@ -174,6 +174,7 @@ namespace CSM.Bataan.Web.Areas.Manage.Controllers
             return RedirectToAction("Index");
         }
 
+
         [HttpGet, Route("/manage/posts/update-thumbnail/{postId}")]
         public IActionResult Thumbnail(Guid? postId)
         {
@@ -226,6 +227,51 @@ namespace CSM.Bataan.Web.Areas.Manage.Controllers
                     //save the image into the path formulated earlier
                     image.Save(filePath);
                 }      
+            }
+
+            return RedirectToAction("Thumbnail", new { PostId = model.PostId });
+        }
+
+        [HttpGet, Route("/manage/posts/update-banner/{postId}")]
+        public IActionResult Banner(Guid? postId)
+        {
+            return View(new BannerViewModel() { PostId = postId });
+        }
+
+        [HttpPost, Route("/manage/posts/update-banner")]
+        public async Task<IActionResult> Banner(BannerViewModel model)
+        {
+            var fileSize = model.Thumbnail.Length;
+            if ((fileSize / 1048576.0) > 5)
+            {
+                ModelState.AddModelError("", "The file you uploaded is too large. Filesize limit is 5mb.");
+                return View(model);
+            }
+
+            if (model.Thumbnail.ContentType != "image/jpeg" && model.Thumbnail.ContentType != "image/png")
+            {
+                ModelState.AddModelError("", "Please upload a jpeg or png file for the banner.");
+                return View(model);
+            }
+
+            var dirPath = _env.WebRootPath + "/posts/" + model.PostId.ToString();
+            if (!Directory.Exists(dirPath))
+            {
+                Directory.CreateDirectory(dirPath);
+            }
+
+            var filePath = dirPath + "/banner.png";
+
+            if (model.Thumbnail.Length > 0)
+            {
+                byte[] bytes = await FileBytes(model.Thumbnail.OpenReadStream());
+
+                using (Image<Rgba32> image = Image.Load(bytes))
+                {
+                    image.Mutate(x => x.Resize(750, 300));
+
+                    image.Save(filePath);
+                }
             }
 
             return RedirectToAction("Thumbnail", new { PostId = model.PostId });
@@ -293,7 +339,7 @@ namespace CSM.Bataan.Web.Areas.Manage.Controllers
 
             if (model.Image.ContentType != "image/jpeg" && model.Image.ContentType != "image/png")
             {
-                return "Error:Please upload a jpeg or png file for the thumbnail.";
+                return "Error:Please upload a jpeg or png file for the attachment.";
             }
 
             var dirPath = _env.WebRootPath + "/posts/" + model.PostId.ToString();
