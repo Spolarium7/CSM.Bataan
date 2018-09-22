@@ -6,7 +6,7 @@
     Layout = "~/Views/Shared/_PublicLayout.cshtml";
 }
 
-<h2>Index</h2>
+<h2>Manage Posts</h2>
 
 <div class="card-container col-md-8">
     <div class="card">
@@ -37,18 +37,18 @@
                                     <h4>@post.Title</h4>
                                     <p>@post.Description</p>
                                     <ul class="list-inline">
-                                        <li class="list-inline-item"><a href="~/manage/posts/update-banner/@post.Id" title="Upload Banner"><button class="btn-success"><i class="fas fa-image"></i></button></a></li>
-                                        <li class="list-inline-item"><a href="~/manage/posts/update-thumbnail/@post.Id" title="Upload Thumbnail"><button class="btn-success"><i class="fas fa-file-image"></i></button></a></li>
-                                        <li class="list-inline-item"><a href="~/manage/posts/update-content/@post.Id" title="Update Content"><button class="btn-success"><i class="fas fa-file-alt"></i></button></a></li>
-                                        <li class="list-inline-item"><a href="~/manage/posts/update-title/@post.Id" title="Update Title"><button class="btn-success"><i class="fas fa-pen-alt"></i></button></a></li>
+                                        <li class="list-inline-item"><a href="~/manage/posts/update-banner/@post.Id" title="Upload Banner"><button class="btn-success form-control-sm"><i class="fas fa-image"></i></button></a></li>
+                                        <li class="list-inline-item"><a href="~/manage/posts/update-thumbnail/@post.Id" title="Upload Thumbnail"><button class="btn-success form-control-sm"><i class="fas fa-file-image"></i></button></a></li>
+                                        <li class="list-inline-item"><a href="~/manage/posts/update-content/@post.Id" title="Update Content"><button class="btn-success form-control-sm"><i class="fas fa-file-alt"></i></button></a></li>
+                                        <li class="list-inline-item"><a href="~/manage/posts/update-title/@post.Id" title="Update Title"><button class="btn-success form-control-sm"><i class="fas fa-pen-alt"></i></button></a></li>
                                         @{
                                             if (post.IsPublished)
                                             {
-                                                <li class="list-inline-item"><a href="#" title="Unpublish" onclick="confirmUnpublish('@post.Id','@post.Title')"><button class="btn-danger"><i class="fas fa-window-close"></i></button></a></li>
+                                                <li class="list-inline-item"><a href="#" title="Unpublish" onclick="confirmUnpublish('@post.Id','@post.Title')"><button class="btn-danger form-control-sm"><i class="fas fa-window-close"></i></button></a></li>
                                             }
                                             else
                                             {
-                                                <li class="list-inline-item"><a href="#" title="Publish" onclick="confirmPublish('@post.Id','@post.Title')"><button class="btn-success"><i class="fas fa-check-square"></i></button></a></li>
+                                                <li class="list-inline-item"><a href="#" title="Publish" onclick="confirmPublish('@post.Id','@post.Title')"><button class="btn-success form-control-sm"><i class="fas fa-check-square"></i></button></a></li>
                                             }
                                         }
                                     </ul>
