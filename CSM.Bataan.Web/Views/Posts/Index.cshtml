@@ -15,7 +15,7 @@
                     <h3>@post.Title</h3>
                     <p class="info-line"><span class="time">@post.Timestamp.ToString("dddd, dd MMMM yyyy hh:mm tt")</span></p>
                     <p>@post.Description</p>
-                    <p><a href="#" class="btn btn-primary">Read More &rarr;</a></p>
+                    <p><a href="~/posts/@post.Id" class="btn btn-primary">Read More &rarr;</a></p>
                 </div>
             </article>
         }

@@ -1,0 +1,8 @@
+﻿@model CSM.Bataan.Web.ViewModels.PostViewModel
+@{
+    ViewData["Title"] = "Post";
+    Layout = "~/Views/Shared/_BlogWithWidgets.cshtml";
+}
+
+<h2>@Model.Title</h2>
+@Html.Raw(Model.Content)
