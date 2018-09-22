@@ -17,6 +17,7 @@
     <Folder Include="Areas\Manage\Data\" />
     <Folder Include="Infrastructure\Data\Enums\" />
     <Folder Include="wwwroot\posts\3a88bea9-8a65-4c23-941a-972a6195b9401\" />
+    <Folder Include="wwwroot\vendor\sceditor\" />
   </ItemGroup>
 
 </Project>

@@ -247,5 +247,86 @@ namespace CSM.Bataan.Web.Areas.Manage.Controllers
                 return ms.ToArray();
             }
         }
+
+        [HttpGet, Route("/manage/posts/update-content/{postId}")]
+        public IActionResult UpdateContent(Guid? postId)
+        {
+            var post = this._context.Posts.FirstOrDefault(p => p.Id == postId);
+
+            if(post != null)
+            {
+                return View(new UpdateContentViewModel() {
+                    PostId = post.Id,
+                    Title = post.Title,
+                    Content = post.Content
+                });
+            }
+
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost, Route("/manage/posts/update-content/")]
+        public IActionResult UpdateContent(UpdateContentViewModel model)
+        {
+            var post = this._context.Posts.FirstOrDefault(p => p.Id == model.PostId);
+
+            if (post != null)
+            {
+                post.Content = model.Content;
+                post.Timestamp = DateTime.UtcNow;
+
+                this._context.Posts.Update(post);
+                this._context.SaveChanges();
+            }
+
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost, Route("/manage/posts/attach-image")]
+        public async Task<string> AttachImage(AttachImageViewModel model)
+        {
+            var fileSize = model.Image.Length;
+            if ((fileSize / 1048576.0) > 5)
+            {
+                return "Error:The file you uploaded is too large. Filesize limit is 5mb.";
+            }
+
+            if (model.Image.ContentType != "image/jpeg" && model.Image.ContentType != "image/png")
+            {
+                return "Error:Please upload a jpeg or png file for the thumbnail.";
+            }
+
+            var dirPath = _env.WebRootPath + "/posts/" + model.PostId.ToString();
+            if (!Directory.Exists(dirPath))
+            {
+                Directory.CreateDirectory(dirPath);
+            }
+
+
+            var imgUrl = "/content_" + Guid.NewGuid().ToString() + ".png";
+            var filePath = dirPath + imgUrl;
+
+            if (model.Image.Length > 0)
+            {
+
+
+                byte[] bytes = await FileBytes(model.Image.OpenReadStream());
+
+                using (Image<Rgba32> image = Image.Load(bytes))
+                {
+
+                    //if image wider than 800 px scale to its aspect ratio
+                    if (image.Width > 800)
+                    {
+                        var ratio = 800 / image.Width;
+                        image.Mutate(x => x.Resize(800, Convert.ToInt32(image.Height * ratio)));
+                    }
+
+                    image.Save(filePath);
+                }
+            }
+
+            return "OK:/posts/" + model.PostId.ToString() + "/" + imgUrl;
+        }
     }
 }
