@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="BCrypt" Version="1.0.0" />
     <PackageReference Include="CodeKicker.BBCode" Version="5.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.1.1" />
@@ -16,7 +17,6 @@
 
   <ItemGroup>
     <Folder Include="Areas\Manage\Data\" />
-    <Folder Include="Infrastructure\Data\Enums\" />
     <Folder Include="wwwroot\posts\3a88bea9-8a65-4c23-941a-972a6195b9401\" />
     <Folder Include="wwwroot\vendor\sceditor\" />
   </ItemGroup>
