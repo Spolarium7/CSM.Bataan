@@ -1,8 +1,11 @@
-﻿@model CSM.Bataan.Web.ViewModels.IndexViewModel
+﻿@using CSM.Bataan.Web.Infrastructure.Security;
+@model CSM.Bataan.Web.ViewModels.IndexViewModel
 @using CSM.Bataan.Web.Infrastructure.Data.Models
 @{
     Layout = "~/Views/Shared/_BlogWithWidgets.cshtml";
 }
+
+Welcome @WebUser.FullName
 
 <h1>Announcements</h1>
 <section class="posts-con">

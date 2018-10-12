@@ -18,7 +18,8 @@ namespace CSM.Bataan.Web.Controllers
             _context = context;
         }
 
-
+        [HttpGet, Route("/posts")]
+        [HttpGet, Route("/posts/index")]
         public IActionResult Index()
         {
             return View(new IndexViewModel()

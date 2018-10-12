@@ -3,10 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using CSM.Bataan.Web.Infrastructure.Data.Helpers;
 using CSM.Bataan.Web.Infrastructure.Data.Models;
+using CSM.Bataan.Web.Infrastructure.Security;
 using CSM.Bataan.Web.ViewModels.Account;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 
@@ -58,7 +62,7 @@ namespace CSM.Bataan.Web.Controllers
                     Gender = model.Gender,
                     LoginStatus = Infrastructure.Data.Enums.LoginStatus.NewRegister,
                     RegistrationCode = registrationCode,
-                    Password = DevOne.Security.Cryptography.BCrypt.BCryptHelper.HashPassword(model.Password, DevOne.Security.Cryptography.BCrypt.BCryptHelper.GenerateSalt(8))
+                    Password = BCrypt.BCryptHelper.HashPassword(model.Password, BCrypt.BCryptHelper.GenerateSalt(8))
                 };
 
                 this._context.Users.Add(user);
@@ -111,14 +115,14 @@ namespace CSM.Bataan.Web.Controllers
         }
 
         [HttpPost, Route("account/login")]
-        public IActionResult Login(LoginViewModel model)
+        public async Task<IActionResult> Login(LoginViewModel model)
         {
             var user = this._context.Users.FirstOrDefault(u => 
                 u.EmailAddress.ToLower() == model.EmailAddress.ToLower());
 
             if (user != null)
             {
-                if (DevOne.Security.Cryptography.BCrypt.BCryptHelper.CheckPassword(model.Password, user.Password))
+                if (BCrypt.BCryptHelper.CheckPassword(model.Password, user.Password))
                 {
                     if (user.LoginStatus == Infrastructure.Data.Enums.LoginStatus.Locked)
                     {
@@ -137,6 +141,9 @@ namespace CSM.Bataan.Web.Controllers
                         this._context.Users.Update(user);
                         this._context.SaveChanges();
 
+                        WebUser.SetUser(user);
+                        await this.SignIn();
+
                         return RedirectToAction("change-password");
                     }
                     else if (user.LoginStatus == Infrastructure.Data.Enums.LoginStatus.Active)
@@ -145,6 +152,9 @@ namespace CSM.Bataan.Web.Controllers
                         user.LoginStatus = Infrastructure.Data.Enums.LoginStatus.Active;
                         this._context.Users.Update(user);
                         this._context.SaveChanges();
+
+                        WebUser.SetUser(user);
+                        await this.SignIn();
 
                         return RedirectPermanent("/posts/index");
                     }
@@ -187,7 +197,7 @@ namespace CSM.Bataan.Web.Controllers
             if (user != null)
             {
                 var newPassword = RandomString(6);
-                user.Password = DevOne.Security.Cryptography.BCrypt.BCryptHelper.HashPassword(newPassword, DevOne.Security.Cryptography.BCrypt.BCryptHelper.GenerateSalt(8));
+                user.Password = BCrypt.BCryptHelper.HashPassword(newPassword, BCrypt.BCryptHelper.GenerateSalt(8));
                 user.LoginStatus = Infrastructure.Data.Enums.LoginStatus.NeedsToChangePassword;
 
                 this._context.Users.Update(user);
@@ -210,6 +220,42 @@ namespace CSM.Bataan.Web.Controllers
         /// <summary>
         /// ////////////////////////////////////////
         /// </summary>
+        /// 
+        private async Task SignIn()
+        {
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.NameIdentifier, WebUser.UserId.ToString())
+            };
+
+            ClaimsIdentity identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+            ClaimsPrincipal principal = new ClaimsPrincipal(identity);
+
+            var authProperties = new AuthenticationProperties
+            {
+                AllowRefresh = true,
+                ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(10),
+                IsPersistent = true,
+                IssuedUtc = DateTimeOffset.UtcNow
+            };
+
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, authProperties);
+        }
+
+        private async Task SignOut()
+        {
+            await HttpContext.SignOutAsync();
+
+            WebUser.EmailAddress = string.Empty;
+            WebUser.FirstName = string.Empty;
+            WebUser.LastName = string.Empty;
+            WebUser.UserId = null;
+
+            HttpContext.Session.Clear();
+        }
+
+
         private Random random = new Random();
         private string RandomString(int length)
         {
