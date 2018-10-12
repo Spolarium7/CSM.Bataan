@@ -223,7 +223,6 @@ namespace CSM.Bataan.Web.Controllers
             var fromAddress = new MailAddress(emailUserName, "CSM Bataan Apps");
             string body = message;
 
-
             ///https://support.google.com/accounts/answer/6010255?hl=en
             var smtp = new SmtpClient
             {
