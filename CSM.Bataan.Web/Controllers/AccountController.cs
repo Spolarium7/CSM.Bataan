@@ -5,12 +5,14 @@ using System.Net;
 using System.Net.Mail;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using CSM.Bataan.Web.Infrastructure.Data.Enums;
 using CSM.Bataan.Web.Infrastructure.Data.Helpers;
 using CSM.Bataan.Web.Infrastructure.Data.Models;
 using CSM.Bataan.Web.Infrastructure.Security;
 using CSM.Bataan.Web.ViewModels.Account;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 
@@ -141,7 +143,7 @@ namespace CSM.Bataan.Web.Controllers
                         this._context.Users.Update(user);
                         this._context.SaveChanges();
 
-                        WebUser.SetUser(user);
+                        WebUser.SetUser(user, GetRoles(user.Id));
                         await this.SignIn();
 
                         return RedirectToAction("change-password");
@@ -153,7 +155,7 @@ namespace CSM.Bataan.Web.Controllers
                         this._context.Users.Update(user);
                         this._context.SaveChanges();
 
-                        WebUser.SetUser(user);
+                        WebUser.SetUser(user, GetRoles(user.Id));
                         await this.SignIn();
 
                         return RedirectPermanent("/posts/index");
@@ -180,6 +182,19 @@ namespace CSM.Bataan.Web.Controllers
             ModelState.AddModelError("", "Invalid Login.");
             return View();
 
+        }
+
+        private List<Role> GetRoles(Guid? userId)
+        {
+            List<Role> roles = new List<Role>();
+            var userRoles = this._context.UserRoles.Where(r => r.UserId == userId);
+
+            foreach(UserRole userRole in userRoles)
+            {
+                roles.Add(userRole.Role);
+            }
+
+            return roles;
         }
 
         [HttpGet, Route("account/forgot-password")]
@@ -217,6 +232,15 @@ namespace CSM.Bataan.Web.Controllers
             return View();
         }
 
+        [Authorize(Policy = "SignedIn")]
+        [HttpGet, Route("account/change-password")]
+        public IActionResult ChangePassword()
+        {
+            return View();
+        }
+
+
+
         /// <summary>
         /// ////////////////////////////////////////
         /// </summary>
@@ -251,6 +275,7 @@ namespace CSM.Bataan.Web.Controllers
             WebUser.FirstName = string.Empty;
             WebUser.LastName = string.Empty;
             WebUser.UserId = null;
+            WebUser.Roles = null;
 
             HttpContext.Session.Clear();
         }

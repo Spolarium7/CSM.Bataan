@@ -17,12 +17,13 @@ namespace CSM.Bataan.Web.Infrastructure.Security
             get => Current.User.Identity.IsAuthenticated && UserId.HasValue;
         }
 
-        public static void SetUser(User user)
+        public static void SetUser(User user, List<Role> roles)
         {
             EmailAddress = user.EmailAddress;
             FirstName = user.FirstName;
             LastName = user.LastName;
             UserId = user.Id;
+            Roles = roles;
         }
 
         public static IServiceProvider Services
@@ -74,6 +75,12 @@ namespace CSM.Bataan.Web.Infrastructure.Security
         public static string FullName
         {
             get => string.Format("{0} {1}", FirstName, LastName);
+        }
+
+        public static List<Role> Roles
+        {
+            get => Current.Session.GetObjectFromJson<List<Role>>("Roles");
+            set => Current.Session.SetObjectAsJson("Roles", value);
         }
     }
 }
