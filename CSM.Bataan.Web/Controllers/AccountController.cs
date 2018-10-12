@@ -172,6 +172,40 @@ namespace CSM.Bataan.Web.Controllers
 
         }
 
+        [HttpGet, Route("account/forgot-password")]
+        public IActionResult ForgotPassword()
+        {
+            return View();
+        }
+
+        [HttpPost, Route("account/forgot-password")]
+        public IActionResult ForgotPassword(ForgotPasswordViewModel model)
+        {
+            var user = this._context.Users.FirstOrDefault(u =>
+                    u.EmailAddress.ToLower() == model.EmailAddress.ToLower());
+
+            if (user != null)
+            {
+                var newPassword = RandomString(6);
+                user.Password = DevOne.Security.Cryptography.BCrypt.BCryptHelper.HashPassword(newPassword, DevOne.Security.Cryptography.BCrypt.BCryptHelper.GenerateSalt(8));
+                user.LoginStatus = Infrastructure.Data.Enums.LoginStatus.NeedsToChangePassword;
+
+                this._context.Users.Update(user);
+                this._context.SaveChanges();
+
+                this.SendNow(
+                            "Hi " + user.FirstName + " " + user.LastName + @",
+                             You forgot your password. Please use this new password: " + newPassword + @".
+                             Regards,
+                             CSM Bataan Website",
+                            user.EmailAddress,
+                            user.FirstName + " " + user.LastName,
+                            "CSM Bataan Website - Forgot Password"
+                );
+            }
+
+            return View();
+        }
 
         /// <summary>
         /// ////////////////////////////////////////
