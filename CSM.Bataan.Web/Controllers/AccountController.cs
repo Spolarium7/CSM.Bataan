@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
@@ -13,8 +14,12 @@ using CSM.Bataan.Web.ViewModels.Account;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
 
 namespace CSM.Bataan.Web.Controllers
 {
@@ -24,14 +29,16 @@ namespace CSM.Bataan.Web.Controllers
         protected readonly IConfiguration _config;
         private string emailUserName;
         private string emailPassword;
+        private IHostingEnvironment _env;
 
-        public AccountController(DefaultDbContext context, IConfiguration iConfiguration)
+        public AccountController(DefaultDbContext context, IConfiguration iConfiguration, IHostingEnvironment env)
         {
             _context = context;
             this._config = iConfiguration;
             var emailConfig = this._config.GetSection("Email");
             emailUserName = (emailConfig["Username"]).ToString();
             emailPassword = (emailConfig["Password"]).ToString();
+            _env = env;
         }
 
         [HttpGet, Route("account/register")]
@@ -309,6 +316,68 @@ namespace CSM.Bataan.Web.Controllers
             }
 
             return View();
+        }
+
+        [Authorize(Policy = "SignedIn")]
+        [HttpGet, Route("account/update-profile-image")]
+        public IActionResult UpdateProfileImage()
+        {
+            return View();
+        }
+
+        [Authorize(Policy = "SignedIn")]
+        [HttpPost, Route("account/update-profile-image")]
+        public async Task<IActionResult> UpdateProfileImage(ProfileImageViewModel model)
+        {
+            var fileSize = model.Image.Length;
+            if ((fileSize / 1048576.0) > 2)
+            {
+                ModelState.AddModelError("", "The file you uploaded is too large. Filesize limit is 2mb.");
+                return View(model);
+            }
+
+            if (model.Image.ContentType != "image/jpeg" && model.Image.ContentType != "image/png")
+            {
+                ModelState.AddModelError("", "Please upload a jpeg or png file for the thumbnail.");
+                return View(model);
+            }
+
+            var dirPath = _env.WebRootPath + "/users/";
+            if (!Directory.Exists(dirPath))
+            {
+                Directory.CreateDirectory(dirPath);
+            }
+
+            var filePath = dirPath + WebUser.UserId.ToString() + ".png";
+
+            if (model.Image.Length > 0)
+            {
+
+                byte[] bytes = await FileBytes(model.Image.OpenReadStream());
+
+                using (Image<Rgba32> image = Image.Load(bytes))
+                {
+                    image.Mutate(x => x.Resize(150, 150));
+
+                    image.Save(filePath);
+                }
+            }
+
+            return RedirectToAction("UpdateProfileImage");
+        }
+
+        public async Task<byte[]> FileBytes(Stream input)
+        {
+            byte[] buffer = new byte[16 * 1024];
+            using (MemoryStream ms = new MemoryStream())
+            {
+                int read;
+                while ((read = input.Read(buffer, 0, buffer.Length)) > 0)
+                {
+                    ms.Write(buffer, 0, read);
+                }
+                return ms.ToArray();
+            }
         }
 
         /// ////////////////////////////////////////

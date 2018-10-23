@@ -1,0 +1,22 @@
+﻿@using CSM.Bataan.Web.Infrastructure.Security;
+@model CSM.Bataan.Web.ViewModels.Account.ProfileImageViewModel
+@{
+    ViewData["Title"] = "Update Profile Image";
+    Layout = "~/views/shared/_publiclayout.cshtml";
+}
+
+<h2>Update Profile Image</h2>
+
+<div class="row">
+    <div class="col-md-6">
+        <form action="~/account/update-profile-image" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="Image">Update Profile Image:</label><br />
+                <img src="~/users/@(WebUser.UserId).png" style="width:150px;height:150px;" /></br></br>
+                <input type="file" class="form-control" name="Image" />
+                @Html.ValidationSummary()
+            </div>
+            <button type="submit" class="btn btn-success">Submit</button>
+        </form>
+    </div>
+</div>
