@@ -232,6 +232,8 @@ namespace CSM.Bataan.Web.Controllers
             return View();
         }
 
+
+        ///SIGNED IN ////////////////////////////////////////////////////////////////////////////////
         [Authorize(Policy = "SignedIn")]
         [HttpGet, Route("account/change-password")]
         public IActionResult ChangePassword()
@@ -273,12 +275,43 @@ namespace CSM.Bataan.Web.Controllers
             return View();
         }
 
+        [Authorize(Policy = "SignedIn")]
+        [HttpGet, Route("account/update-profile")]
+        public IActionResult UpdateProfile()
+        {
+            return View(new UpdateProfileViewModel()
+            {
+                FirstName = WebUser.FirstName,
+                LastName = WebUser.LastName,
+                UserId = WebUser.UserId
+            });
+        }
 
+        [Authorize(Policy = "SignedIn")]
+        [HttpPost, Route("account/update-profile")]
+        public IActionResult UpdateProfile(UpdateProfileViewModel model)
+        {
+            var user = this._context.Users.FirstOrDefault(u =>
+                    u.Id == WebUser.UserId);
 
-        /// <summary>
+            if (user != null)
+            {
+                user.FirstName = model.FirstName;
+                user.LastName = model.LastName;
+
+                this._context.Users.Update(user);
+                this._context.SaveChanges();
+
+                WebUser.FirstName = model.FirstName;
+                WebUser.LastName = model.LastName;
+
+                return RedirectPermanent("/home/index");
+            }
+
+            return View();
+        }
+
         /// ////////////////////////////////////////
-        /// </summary>
-        /// 
         private async Task SignIn()
         {
             var claims = new List<Claim>
