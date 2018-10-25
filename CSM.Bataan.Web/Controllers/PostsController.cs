@@ -18,8 +18,8 @@ namespace CSM.Bataan.Web.Controllers
             _context = context;
         }
 
-        [HttpGet, Route("/posts")]
-        [HttpGet, Route("/posts/index")]
+        [HttpGet, Route("posts")]
+        [HttpGet, Route("posts/index")]
         public IActionResult Index()
         {
             return View(new IndexViewModel()
@@ -28,7 +28,7 @@ namespace CSM.Bataan.Web.Controllers
             });
         }
 
-        [HttpGet, Route("/posts/{postId}")]
+        [HttpGet, Route("posts/{postId}")]
         public IActionResult Post(Guid? postId)
         {
             var post = this._context.Posts.FirstOrDefault(p => p.Id == postId);
