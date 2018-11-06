@@ -35,6 +35,7 @@ namespace CSM.Bataan.Web
                 options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             })
+
             .AddCookie(options =>
             {
                 options.Cookie.Expiration = TimeSpan.FromDays(1);

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CodeKicker.BBCode;
 using CSM.Bataan.Web.Infrastructure.Data.Helpers;
+using CSM.Bataan.Web.Infrastructure.Data.Models;
 using CSM.Bataan.Web.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,9 +25,22 @@ namespace CSM.Bataan.Web.Controllers
         {
             return View(new IndexViewModel()
             {
-                Posts = this._context.Posts.ToList()
+                Posts = Feed(1)
             });
         }
+
+        [HttpGet, Route("posts/feed")]
+        public List<Post> Feed(int pageIndex)
+        { 
+            int skip = (int)(3 * (pageIndex - 1));
+            return this._context.Posts
+                                .Where(p => p.IsPublished == true)
+                                .OrderByDescending(p => p.Timestamp)
+                                .Skip(skip)
+                                .Take(3)
+                                .ToList();
+        }
+
 
         [HttpGet, Route("posts/{postId}")]
         public IActionResult Post(Guid? postId)
